@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DP-750 Knowledge Gap Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAFAF7;--surface:#FFFFFF;--surface2:#F4F3EE;--surface3:#EEECEA;
+  --border:#E2E0D8;--border2:#D4D2C8;
+  --text:#1A1916;--text2:#3D3B35;--muted:#7A7769;--muted2:#A8A598;
+  --red:#C84B31;--red-bg:#FEF2EE;--red-border:#FBDDD5;
+  --amber:#B8720A;--amber-bg:#FEF9EE;--amber-border:#FAE8C0;
+  --green:#1A6B3A;--green-bg:#EEF7F2;--green-border:#C4E4D2;
+  --blue:#1E4FAA;--blue-bg:#EEF3FC;--blue-border:#C4D5F5;
+  --purple:#6B3FAA;--purple-bg:#F4EFFE;--purple-border:#D8C5F5;
+  --ink:#1A1916;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.6;font-size:15px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#D4D2C8;border-radius:3px}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── PRINT ─── */
+@media print{
+  .no-print{display:none!important}
+  body{background:#fff;font-size:12px}
+  .section{page-break-inside:avoid}
+  .gap-card{page-break-inside:avoid}
+  pre{white-space:pre-wrap;font-size:10px}
+}
+
+/* ─── TOP NAV ─── */
+.topbar{background:var(--text);color:#EEE;padding:10px 52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:16px;flex-wrap:wrap}
+.topbar-title{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:#AAA;text-transform:uppercase}
+.topbar-btns{display:flex;gap:8px;flex-shrink:0}
+.btn{padding:6px 14px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:1px solid;transition:all .15s;letter-spacing:.3px}
+.btn-outline{background:transparent;border-color:#444;color:#CCC}
+.btn-outline:hover{background:#2A2A2A;border-color:#666}
+.btn-primary{background:#22D3EE;border-color:#22D3EE;color:#06080F}
+.btn-primary:hover{background:#1AC4DF}
+
+/* ─── HERO ─── */
+.hero{padding:52px 52px 44px;border-bottom:2px solid var(--border);background:linear-gradient(160deg,#F0EEE8 0%,var(--bg) 60%)}
+.hero-inner{max-width:900px;margin:0 auto}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:'Bitter',serif;font-size:clamp(32px,4.5vw,48px);font-weight:700;line-height:1.08;letter-spacing:-1px;color:var(--ink);margin-bottom:8px}
+h1 span{color:var(--red)}
+.hero-sub{font-size:15px;color:var(--muted);max-width:580px;line-height:1.65;margin-bottom:28px}
+
+/* PRIORITY LEGEND */
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.leg{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
+.leg-dot{width:8px;height:8px;border-radius:50%}
+
+/* ─── TRANSFER BOX ─── */
+.transfer-box{background:var(--green-bg);border:1px solid var(--green-border);border-radius:12px;padding:20px 24px;max-width:900px;margin:0 auto 0}
+.transfer-title{font-family:'DM Mono',monospace;font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.transfer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.t-item{font-size:13px;color:#2A5A3A;display:flex;gap:8px;align-items:flex-start}
+.t-check{color:var(--green);font-size:13px;flex-shrink:0;margin-top:1px}
+
+/* ─── MAIN ─── */
+.main{max-width:900px;margin:0 auto;padding:44px 52px 80px}
+@media(max-width:640px){.hero{padding:32px 20px 28px}.main{padding:28px 20px 60px}.topbar{padding:10px 20px}}
+
+/* ─── SECTION ─── */
+.section{margin-bottom:52px}
+.section-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:14px;border-bottom:2px solid var(--border)}
+.section-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);letter-spacing:1px}
+h2{font-family:'Bitter',serif;font-size:22px;font-weight:700;color:var(--ink)}
+.section-weight{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:99px;border:1px solid;letter-spacing:1px;font-weight:500;flex-shrink:0}
+
+/* ─── GAP CARDS ─── */
+.gap-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:16px;overflow:hidden}
+.gap-header{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.gap-header:hover{background:var(--surface2)}
+.priority-badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;padding:3px 9px;border-radius:99px;border:1px solid;text-transform:uppercase;font-weight:500;flex-shrink:0}
+.p-critical{background:var(--red-bg);border-color:var(--red-border);color:var(--red)}
+.p-high{background:var(--amber-bg);border-color:var(--amber-border);color:var(--amber)}
+.p-medium{background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue)}
+.p-low{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
+.gap-title{font-family:'Bitter',serif;font-size:17px;font-weight:600;color:var(--ink);flex:1}
+.gap-toggle{font-size:12px;color:var(--muted2);font-family:'DM Mono',monospace;flex-shrink:0}
+.gap-body{padding:20px 24px;display:none}
+.gap-body.open{display:block}
+
+/* ─── CONCEPT ─── */
+.concept-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;margin-top:18px}
+.concept-label:first-child{margin-top:0}
+p.note{font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:8px}
+p.note strong{color:var(--ink);font-weight:600}
+p.note code{font-family:'DM Mono',monospace;font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--red)}
+
+/* BRIDGE BOX */
+.bridge{background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13px;color:#2A3D6B;line-height:1.6}
+.bridge strong{color:var(--blue)}
+.bridge::before{content:'🔗 DP-700 Bridge: ';font-family:'DM Mono',monospace;font-size:10px;color:var(--blue);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;font-weight:600}
+
+/* EXAM TIP */
+.exam-tip{background:var(--amber-bg);border:1px solid var(--amber-border);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:13px;color:#6B4A10;line-height:1.6}
+.exam-tip::before{content:'⭐ EXAM: ';font-family:'DM Mono',monospace;font-size:10px;color:var(--amber);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;font-weight:600}
+
+/* WATCH OUT */
+.watchout{background:var(--red-bg);border:1px solid var(--red-border);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:13px;color:#7A2A18;line-height:1.6}
+.watchout::before{content:'⚠ Watch Out: ';font-family:'DM Mono',monospace;font-size:10px;color:var(--red);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;font-weight:600}
+
+/* KEY POINTS LIST */
+ul.points{list-style:none;padding:0;margin:10px 0}
+ul.points li{display:flex;gap:10px;margin-bottom:7px;font-size:14px;color:var(--text2);line-height:1.55;align-items:flex-start}
+ul.points li::before{content:'▸';color:var(--muted2);flex-shrink:0;margin-top:1px}
+ul.points li strong{color:var(--ink)}
+
+/* COMPARISON TABLE */
+.comp-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+.comp-table th{background:var(--surface2);border:1px solid var(--border);padding:9px 12px;text-align:left;font-weight:700;font-family:'DM Sans',sans-serif;color:var(--ink);font-size:12px}
+.comp-table td{border:1px solid var(--border);padding:9px 12px;color:var(--text2);vertical-align:top;line-height:1.5}
+.comp-table tr:nth-child(even) td{background:var(--surface2)}
+.comp-table code{font-family:'DM Mono',monospace;font-size:11px;color:var(--red);background:var(--surface2);padding:1px 4px;border-radius:3px}
+
+/* CODE BLOCK */
+.code-wrap{background:#0E1218;border-radius:10px;overflow:hidden;margin:12px 0}
+.code-top{display:flex;align-items:center;gap:6px;padding:9px 16px;background:#0A0D14;border-bottom:1px solid #1A2030}
+.cd{width:9px;height:9px;border-radius:50%}
+.cd-r{background:#FF5F57}.cd-y{background:#FEBC2E}.cd-g{background:#28C840}
+.code-lang{font-family:'DM Mono',monospace;font-size:10px;color:#4A5570;margin-left:6px}
+pre{font-family:'DM Mono',monospace;font-size:12px;color:#8BBFDB;padding:18px;line-height:1.85;overflow-x:auto;white-space:pre;background:transparent;border:none}
+pre .kw{color:#C792EA}
+pre .st{color:#C3E88D}
+pre .cm{color:#4A6070;font-style:italic}
+
+/* QUICK REF TABLE */
+.qr-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+.qr-table th{background:#1A1916;color:#EEE;border:1px solid #333;padding:8px 12px;text-align:left;font-size:11px;font-family:'DM Mono',monospace;letter-spacing:.5px}
+.qr-table td{border:1px solid var(--border);padding:8px 12px;color:var(--text2);vertical-align:top}
+.qr-table td:first-child{font-family:'DM Mono',monospace;font-size:12px;color:var(--red);background:var(--surface2);font-weight:500;white-space:nowrap}
+.qr-table tr:hover td{background:#F8F7F2}
+
+/* PROGRESS TRACKER */
+.tracker{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:20px 0}
+.track-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s}
+.track-item:hover{background:var(--surface2)}
+.track-item.done{background:var(--green-bg);border-color:var(--green-border)}
+.track-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border2);background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.track-item.done .track-box{background:var(--green);border-color:var(--green)}
+.track-check{color:#fff;font-size:10px;font-weight:900;display:none}
+.track-item.done .track-check{display:block}
+.track-label{font-size:13px;font-weight:500;color:var(--text2);line-height:1.3}
+.track-item.done .track-label{color:var(--green)}
+
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--border);margin:32px 0}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar no-print">
+  <span class="topbar-title">DP-750 · Knowledge Gap Notes · DP-700 Edition</span>
+  <div class="topbar-btns">
+    <button class="btn btn-outline" onclick="expandAll()">Expand All</button>
+    <button class="btn btn-outline" onclick="collapseAll()">Collapse All</button>
+    <button class="btn btn-primary" onclick="window.print()">🖨 Print / Save PDF</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">DP-750 Beta · Exam March 2026 · Your Starting Point: DP-700</div>
+    <h1>Close the Gap.<br><span>What's New. What Transfers.</span></h1>
+    <p class="hero-sub">You have strong Azure foundations. This document covers ONLY what is new, different, or Databricks-specific. Skip what you already know — focus only on what's here.</p>
+
+    <!-- WHAT TRANSFERS -->
+    <div class="transfer-box">
+      <div class="transfer-title">✓ Already covered by your DP-700 — minimal study needed</div>
+      <div class="transfer-grid">
+        <div class="t-item"><span class="t-check">✓</span>Azure Data Factory pipelines &amp; triggers</div>
+        <div class="t-item"><span class="t-check">✓</span>Microsoft Entra ID + service principals</div>
+        <div class="t-item"><span class="t-check">✓</span>Azure Key Vault secrets management</div>
+        <div class="t-item"><span class="t-check">✓</span>Managed identities for resource access</div>
+        <div class="t-item"><span class="t-check">✓</span>Azure Monitor + Log Analytics + KQL</div>
+        <div class="t-item"><span class="t-check">✓</span>Delta Lake basics (ACID, time travel)</div>
+        <div class="t-item"><span class="t-check">✓</span>Medallion architecture (Bronze/Silver/Gold)</div>
+        <div class="t-item"><span class="t-check">✓</span>SCD Type 1 &amp; Type 2 concepts</div>
+        <div class="t-item"><span class="t-check">✓</span>Git branching, PRs, conflict resolution</div>
+        <div class="t-item"><span class="t-check">✓</span>SQL (joins, aggregations, MERGE)</div>
+        <div class="t-item"><span class="t-check">✓</span>ADLS Gen2 + Azure storage concepts</div>
+        <div class="t-item"><span class="t-check">✓</span>Basic PySpark / DataFrame API</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- PRIORITY LEGEND -->
+  <div class="legend" style="margin-bottom:28px">
+    <span style="font-size:12px;font-weight:700;color:var(--muted);margin-right:4px">Priority:</span>
+    <span class="leg"><span class="leg-dot" style="background:#C84B31"></span>Critical — High exam weight, totally new</span>
+    <span class="leg"><span class="leg-dot" style="background:#B8720A"></span>High — New concept, moderate effort</span>
+    <span class="leg"><span class="leg-dot" style="background:#1E4FAA"></span>Medium — Familiar pattern, Databricks syntax</span>
+    <span class="leg"><span class="leg-dot" style="background:#1A6B3A"></span>Low — Mostly transfers from DP-700</span>
+  </div>
+
+  <!-- PROGRESS TRACKER -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:40px">
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px">Study Progress — tick off each gap as you cover it</div>
+    <div class="tracker" id="tracker">
+      <!-- generated by JS -->
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:12px" id="trackerCount">0 / 0 gaps covered</div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 1: COMPUTE
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Compute Types &amp; Configuration</h2>
+      <span class="section-weight" style="color:#22D3EE;border-color:#22D3EE30;background:rgba(34,211,238,0.06)">Setup 15–20%</span>
+    </div>
+
+    <div class="gap-card" data-gap="Databricks Compute Types">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-critical">Critical</span>
+        <span class="gap-title">Databricks Compute Types — Know Every One</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <table class="comp-table">
+          <tr><th>Type</th><th>Use Case</th><th>Key Trait</th></tr>
+          <tr><td><strong>Job compute</strong></td><td>Scheduled ETL, batch pipelines</td><td>Auto-terminates after job. Cheapest for production.</td></tr>
+          <tr><td><strong>All-purpose</strong> (classic)</td><td>Dev, interactive notebooks</td><td>Stays running. Expensive if left idle. Never use for prod ETL.</td></tr>
+          <tr><td><strong>Serverless</strong></td><td>No-config compute, fast startup</td><td>Databricks manages infra. You pick cores only. No config needed.</td></tr>
+          <tr><td><strong>SQL Warehouse</strong></td><td>BI queries, SQL analytics, dashboards</td><td>Optimised for SQL. Classic or serverless variant. Use for AI/BI Genie.</td></tr>
+          <tr><td><strong>Shared compute</strong></td><td>Multi-user, cost-effective dev</td><td>Multiple users share one cluster. Limited to SQL &amp; Python. No arbitrary installs.</td></tr>
+          <tr><td><strong>Cluster pools</strong></td><td>Reduce startup latency for job clusters</td><td>Pre-warmed VMs waiting. Job cluster borrows from pool — starts in seconds.</td></tr>
+        </table>
+        <div class="exam-tip">The exam loves "which compute type should you use?" scenarios. Job compute = scheduled/ETL every time. Serverless = when no config is required. All-purpose = ONLY interactive dev. Never recommend all-purpose for production scheduled pipelines.</div>
+        <div class="watchout">Photon acceleration is a cluster feature — not a separate compute type. It must be enabled on a supported node type (Standard_D/E series). It does NOT accelerate RDD-level code — only SQL and DataFrame API calls.</div>
+        <div class="concept-label">Performance settings to know</div>
+        <ul class="points">
+          <li><strong>Autoscaling</strong> — min/max workers. Databricks adds/removes workers based on load. Set min ≥ 1 to avoid cold cluster.</li>
+          <li><strong>Auto-termination</strong> — idle minutes before shutdown. Always set on all-purpose clusters to avoid cost bleed.</li>
+          <li><strong>Node type</strong> — memory-optimised for large joins/caches, compute-optimised for CPU-heavy transforms, GPU for ML.</li>
+          <li><strong>Databricks Runtime (DBR)</strong> — versioned Spark + libraries. DBR ML = includes ML frameworks. Match DBR to your Spark version requirements.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="gap-card" data-gap="Library Installation">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-medium">Medium</span>
+        <span class="gap-title">Library Installation Scopes</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <ul class="points">
+          <li><strong>Notebook-scoped</strong> — <code>%pip install package</code> inside a cell. Only applies to that notebook session. Use for quick experimentation.</li>
+          <li><strong>Cluster-scoped (init scripts)</strong> — runs on every node at startup. Use for C libraries or packages needed by all notebooks on that cluster.</li>
+          <li><strong>Workspace libraries</strong> — uploaded to workspace, then attached to cluster via UI. Good for custom .whl files.</li>
+          <li><strong>Policy libraries</strong> — defined in cluster policy, auto-installed on any cluster using that policy.</li>
+        </ul>
+        <div class="exam-tip">If the question says "all notebooks on the cluster need the library" → cluster-scoped / init script. If "just this one notebook" → <code>%pip install</code>.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 2: UNITY CATALOG
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Unity Catalog — Deep Dive</h2>
+      <span class="section-weight" style="color:#22D3EE;border-color:#22D3EE30;background:rgba(34,211,238,0.06)">Setup 15–20%</span>
+    </div>
+
+    <div class="gap-card" data-gap="Unity Catalog Structure">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-critical">Critical</span>
+        <span class="gap-title">Unity Catalog: Hierarchy, Objects &amp; DDL</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="bridge">Microsoft Purview governs data across Azure. Unity Catalog does the same but is SQL-native and embedded in Databricks. One metastore per Azure region, attached to multiple workspaces.</div>
+        <div class="concept-label">The 3-level namespace</div>
+        <p class="note"><code>catalog.schema.table</code> — every object reference uses this format. You cannot query <code>schema.table</code> alone.</p>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">SQL</span></div>
+          <pre><span class="cm">-- Full hierarchy creation</span>
+CREATE CATALOG IF NOT EXISTS bronze_prod;
+CREATE SCHEMA IF NOT EXISTS bronze_prod.raw_data;
+
+<span class="cm">-- Managed table (UC owns the data files)</span>
+CREATE TABLE bronze_prod.raw_data.events (
+  event_id BIGINT NOT NULL,
+  event_ts TIMESTAMP,
+  payload  STRING
+) COMMENT 'Raw event stream from Event Hubs';
+
+<span class="cm">-- External table (you own the ADLS path)</span>
+CREATE TABLE bronze_prod.raw_data.ext_events
+LOCATION 'abfss://raw@mystg.dfs.core.windows.net/events/'
+AS SELECT * FROM parquet.`abfss://raw@mystg.dfs.core.windows.net/events/`;
+
+<span class="cm">-- Volume (for files, not tables)</span>
+CREATE VOLUME bronze_prod.raw_data.landing_files;
+
+<span class="cm">-- Materialized view (stores precomputed result)</span>
+CREATE MATERIALIZED VIEW gold_prod.sales.mv_daily_totals
+AS SELECT date_trunc('day', ts) AS day, SUM(amount) AS total
+   FROM silver_prod.sales.orders GROUP BY 1;</pre>
+        </div>
+        <div class="exam-tip">Managed vs External is a top exam topic. Managed = DROP TABLE deletes the data. External = DROP TABLE removes the metadata only, data remains in ADLS. Use External when data is shared with other tools (ADF, Synapse).</div>
+        <div class="concept-label">Volumes — new concept for DP-750</div>
+        <ul class="points">
+          <li>Volumes store <strong>files</strong>, not tables. Think of them as UC-governed folders in ADLS.</li>
+          <li>Managed volumes — UC manages the path. External volumes — you specify the ADLS path.</li>
+          <li>Access via <code>/Volumes/catalog/schema/volume_name/file.csv</code> — use in COPY INTO, Auto Loader, etc.</li>
+        </ul>
+        <div class="concept-label">Foreign Catalogs</div>
+        <ul class="points">
+          <li>Connect to external data sources: PostgreSQL, MySQL, Iceberg REST catalog, Delta Sharing.</li>
+          <li>Created via <strong>connections</strong> in UC — define connection → create foreign catalog pointing to it.</li>
+          <li>Read-only by default. Used to query external databases without moving data.</li>
+        </ul>
+        <div class="concept-label">AI/BI Genie — configure for data discovery</div>
+        <ul class="points">
+          <li>Genie uses table/column <strong>descriptions</strong> to understand your data for natural language queries.</li>
+          <li>Add descriptions via: <code>ALTER TABLE t ALTER COLUMN c COMMENT 'description';</code></li>
+          <li>Configure Genie instructions in the Databricks workspace UI — point it at your Unity Catalog tables.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 3: SECURITY & GOVERNANCE
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Security &amp; Governance — New Patterns</h2>
+      <span class="section-weight" style="color:#F472B6;border-color:#F472B630;background:rgba(244,114,182,0.06)">Secure &amp; Govern 15–20%</span>
+    </div>
+
+    <div class="gap-card" data-gap="Unity Catalog Permissions">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-critical">Critical</span>
+        <span class="gap-title">GRANT / REVOKE — The Full Permission Chain</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="watchout">The #1 mistake on permission questions: granting SELECT on a table is NOT enough. The user also needs USE CATALOG and USE SCHEMA or they cannot navigate to it.</div>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">SQL</span></div>
+          <pre><span class="cm">-- Minimum grants for a read-only analyst:</span>
+GRANT USE CATALOG ON CATALOG gold_prod TO GROUP analysts;
+GRANT USE SCHEMA  ON SCHEMA gold_prod.sales TO GROUP analysts;
+GRANT SELECT      ON TABLE gold_prod.sales.orders TO GROUP analysts;
+
+<span class="cm">-- Grant on all tables in schema (wildcard-style)</span>
+GRANT SELECT ON ALL TABLES IN SCHEMA gold_prod.sales TO GROUP analysts;
+
+<span class="cm">-- Revoke</span>
+REVOKE SELECT ON TABLE gold_prod.sales.orders FROM GROUP analysts;
+
+<span class="cm">-- Service principal access (for pipelines)</span>
+GRANT SELECT ON TABLE bronze.raw.events TO `app-id-of-service-principal`;</pre>
+        </div>
+        <table class="comp-table">
+          <tr><th>Privilege</th><th>Applies to</th><th>What it allows</th></tr>
+          <tr><td>USE CATALOG</td><td>Catalog</td><td>Navigate into the catalog</td></tr>
+          <tr><td>USE SCHEMA</td><td>Schema</td><td>Navigate into the schema</td></tr>
+          <tr><td>SELECT</td><td>Table/View</td><td>Read data</td></tr>
+          <tr><td>MODIFY</td><td>Table</td><td>INSERT, UPDATE, DELETE</td></tr>
+          <tr><td>CREATE TABLE</td><td>Schema</td><td>Create tables in schema</td></tr>
+          <tr><td>ALL PRIVILEGES</td><td>Any</td><td>Full control</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="gap-card" data-gap="Row Filters and Column Masks">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-critical">Critical</span>
+        <span class="gap-title">Row Filters &amp; Column Masks — Brand New Pattern</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <p class="note">Both are implemented as <strong>SQL functions</strong> applied to tables. This is entirely new — nothing equivalent exists in ADF/Synapse at this level.</p>
+        <div class="concept-label">Row Filters — control which rows users see</div>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">SQL</span></div>
+          <pre><span class="cm">-- Step 1: Create filter function</span>
+CREATE FUNCTION gold.security.region_access(region STRING)
+  RETURNS BOOLEAN
+  RETURN is_account_group_member('all-regions')  <span class="cm">-- admins see all</span>
+      OR region = current_user();                 <span class="cm">-- others see their region</span>
+
+<span class="cm">-- Step 2: Apply to table</span>
+ALTER TABLE gold.sales.orders
+  SET ROW FILTER gold.security.region_access ON (region);
+
+<span class="cm">-- Remove filter</span>
+ALTER TABLE gold.sales.orders DROP ROW FILTER;</pre>
+        </div>
+        <div class="concept-label">Column Masks — control what values users see</div>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">SQL</span></div>
+          <pre><span class="cm">-- Step 1: Create mask function</span>
+CREATE FUNCTION gold.security.mask_email(email STRING)
+  RETURNS STRING
+  RETURN CASE
+    WHEN is_account_group_member('pii-access') THEN email
+    ELSE concat(left(email, 2), '***@***.com')
+  END;
+
+<span class="cm">-- Step 2: Apply to column</span>
+ALTER TABLE gold.customers.profiles
+  ALTER COLUMN email SET MASK gold.security.mask_email;
+
+<span class="cm">-- Remove mask</span>
+ALTER TABLE gold.customers.profiles ALTER COLUMN email DROP MASK;</pre>
+        </div>
+        <div class="exam-tip">Row filter = SQL function returns BOOLEAN (true = show row). Column mask = SQL function transforms the column value. Both use <code>is_account_group_member()</code> or <code>current_user()</code> for dynamic logic. Both applied with ALTER TABLE.</div>
+      </div>
+    </div>
+
+    <div class="gap-card" data-gap="ABAC and Delta Sharing">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-high">High</span>
+        <span class="gap-title">ABAC Tags, Data Lineage, Audit Logging &amp; Delta Sharing</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="concept-label">ABAC with Tags</div>
+        <ul class="points">
+          <li>Assign tags to catalogs, schemas, tables, columns: <code>ALTER TABLE t SET TAGS ('pii' = 'true', 'domain' = 'finance');</code></li>
+          <li>Tags feed attribute-based policies — e.g., "mask all columns tagged pii=true" without needing to update each table manually.</li>
+          <li>Configure tag policies in the Databricks admin UI or via Unity Catalog API.</li>
+        </ul>
+        <div class="concept-label">Data Lineage</div>
+        <ul class="points">
+          <li>Automatic for Delta tables. Shows in <strong>Catalog Explorer</strong> → Lineage tab.</li>
+          <li>Shows upstream sources and downstream consumers for any table.</li>
+          <li>Tracks: owner, history, dependencies, column-level lineage.</li>
+        </ul>
+        <div class="concept-label">Audit Logging</div>
+        <ul class="points">
+          <li>Enable via workspace admin settings → Audit log delivery to ADLS Gen2.</li>
+          <li>Logs: who accessed what, when, which queries ran, permission changes.</li>
+          <li>Use Log Analytics to query audit logs (your DP-700 skill applies directly).</li>
+        </ul>
+        <div class="concept-label">Delta Sharing</div>
+        <ul class="points">
+          <li>Open protocol to share Delta tables <strong>externally</strong> (across orgs, across clouds) without copying data.</li>
+          <li>Create a <strong>Share</strong> → add tables to it → create a <strong>Recipient</strong> → give recipient an activation link.</li>
+          <li>Recipient accesses data read-only using their own tools (Spark, Power BI, pandas).</li>
+        </ul>
+        <div class="bridge">Delta Sharing ≈ OneLake external shares in Fabric. You're sharing read access to data without copying it. The key difference: Delta Sharing is open protocol — recipients don't need Databricks.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 4: INGESTION
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Data Ingestion — All Methods</h2>
+      <span class="section-weight" style="color:#34D399;border-color:#34D39930;background:rgba(52,211,153,0.06)">Prepare &amp; Process 30–35%</span>
+    </div>
+
+    <div class="gap-card" data-gap="Auto Loader">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-critical">Critical</span>
+        <span class="gap-title">Auto Loader — Most Tested Ingestion Method</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="bridge">Nothing in ADF does exactly what Auto Loader does. The closest analogy is ADF's incremental copy with schema mapping — but Auto Loader is streaming, self-managing, and handles schema evolution automatically.</div>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">Python</span></div>
+          <pre><span class="cm"># Auto Loader: incremental file ingestion as a stream</span>
+df = (spark.readStream
+  .format(<span class="st">"cloudFiles"</span>)                        <span class="cm"># ← Always cloudFiles</span>
+  .option(<span class="st">"cloudFiles.format"</span>, <span class="st">"json"</span>)           <span class="cm"># ← Source file format</span>
+  .option(<span class="st">"cloudFiles.schemaLocation"</span>,            <span class="cm"># ← Where inferred schema is stored</span>
+           <span class="st">"/checkpoints/schema/events"</span>)
+  .option(<span class="st">"cloudFiles.inferColumnTypes"</span>, <span class="st">"true"</span>)  <span class="cm"># ← Type inference</span>
+  .load(<span class="st">"abfss://landing@stg.dfs.core.windows.net/events/"</span>))
+
+(df.writeStream
+  .format(<span class="st">"delta"</span>)
+  .option(<span class="st">"checkpointLocation"</span>, <span class="st">"/checkpoints/events"</span>)
+  .option(<span class="st">"mergeSchema"</span>, <span class="st">"true"</span>)                <span class="cm"># ← Allow schema evolution</span>
+  .outputMode(<span class="st">"append"</span>)
+  .toTable(<span class="st">"bronze.raw.events"</span>))</pre>
+        </div>
+        <div class="concept-label">Three Schema modes — know the difference</div>
+        <table class="comp-table">
+          <tr><th>Mode</th><th>Behaviour</th><th>When to use</th></tr>
+          <tr><td><strong>Schema inference</strong></td><td>Auto Loader infers schema from first batch</td><td>Unknown schema, exploratory ingestion</td></tr>
+          <tr><td><strong>Schema hints</strong></td><td>You provide hints, Auto Loader fills the gaps</td><td>Partially known schema</td></tr>
+          <tr><td><strong>Schema evolution</strong></td><td>New columns added to target table automatically</td><td>Source schema changes over time; set <code>mergeSchema=true</code></td></tr>
+        </table>
+        <div class="exam-tip">Always specify BOTH <code>schemaLocation</code> AND <code>checkpointLocation</code>. Without checkpointLocation the stream cannot track progress. Without schemaLocation Auto Loader re-infers schema every restart (expensive).</div>
+      </div>
+    </div>
+
+    <div class="gap-card" data-gap="COPY INTO">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-high">High</span>
+        <span class="gap-title">COPY INTO — Idempotent Batch Loading</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">SQL</span></div>
+          <pre><span class="cm">-- COPY INTO: safe to re-run. Tracks loaded files internally.</span>
+COPY INTO bronze.raw.sales_events
+FROM 'abfss://landing@mystg.dfs.core.windows.net/events/'
+FILEFORMAT = JSON
+FORMAT_OPTIONS (
+  'inferSchema' = 'true',
+  'timestampFormat' = 'yyyy-MM-dd HH:mm:ss'
+)
+COPY_OPTIONS (
+  'mergeSchema' = 'true'  <span class="cm">-- allow new columns</span>
+);
+
+<span class="cm">-- Also supports: CSV, PARQUET, AVRO, ORC, TEXT, BINARYFILE</span></pre>
+        </div>
+        <ul class="points">
+          <li><strong>Idempotent</strong> — tracks which files have been loaded. Re-running won't duplicate data.</li>
+          <li>Works on files in <strong>ADLS, S3, GCS</strong> or Unity Catalog Volumes.</li>
+          <li>Best for <strong>scheduled batch loads</strong> where files land periodically.</li>
+          <li>Use <strong>Auto Loader</strong> instead when you need continuous/streaming ingestion.</li>
+        </ul>
+        <div class="exam-tip">COPY INTO = batch, SQL-based, idempotent. Auto Loader = streaming, Python-based, continuous. The exam will give you a scenario and ask you to choose — batch scheduled? → COPY INTO. Continuous low-latency? → Auto Loader.</div>
+      </div>
+    </div>
+
+    <div class="gap-card" data-gap="Event Hubs Streaming">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-high">High</span>
+        <span class="gap-title">Azure Event Hubs with Structured Streaming</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="bridge">You know Event Hubs from DP-700. In Databricks you consume it via the Kafka-compatible endpoint — Event Hubs exposes a Kafka protocol, so you use the Kafka connector in Spark.</div>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">Python</span></div>
+          <pre"><span class="cm"># Event Hubs via Kafka-compatible endpoint</span>
+eh_conn = dbutils.secrets.get(<span class="st">"kv-scope"</span>, <span class="st">"eventhub-conn-string"</span>)
+
+df = (spark.readStream
+  .format(<span class="st">"kafka"</span>)
+  .option(<span class="st">"kafka.bootstrap.servers"</span>, <span class="st">"mynamespace.servicebus.windows.net:9093"</span>)
+  .option(<span class="st">"subscribe"</span>, <span class="st">"my-event-hub"</span>)
+  .option(<span class="st">"kafka.security.protocol"</span>, <span class="st">"SASL_SSL"</span>)
+  .option(<span class="st">"kafka.sasl.jaas.config"</span>, f<span class="st">"...conn={eh_conn}..."</span>)
+  .load())
+
+<span class="cm"># Parse JSON payload from Kafka value column</span>
+<span class="kw">from</span> pyspark.sql.functions <span class="kw">import</span> from_json, col
+schema = <span class="st">"event_id BIGINT, amount DOUBLE, ts TIMESTAMP"</span>
+parsed = df.select(from_json(col(<span class="st">"value"</span>).cast(<span class="st">"string"</span>), schema).alias(<span class="st">"data"</span>)).select(<span class="st">"data.*"</span>)</pre>
+        </div>
+        <div class="exam-tip">Event Hubs uses the <code>"kafka"</code> format in Spark — NOT a dedicated Event Hubs connector. Always retrieve the connection string from Key Vault secrets. The value column in Kafka is binary — cast to string, then parse JSON.</div>
+      </div>
+    </div>
+
+    <div class="gap-card" data-gap="CDC with APPLY CHANGES INTO">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-high">High</span>
+        <span class="gap-title">CDC — APPLY CHANGES INTO</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="bridge">ADF uses SQL Server CDC source connectors. Databricks handles CDC natively with APPLY CHANGES INTO inside Lakeflow Declarative Pipelines.</div>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">SQL — inside a Lakeflow Pipeline</span></div>
+          <pre"><span class="cm">-- APPLY CHANGES INTO handles INSERT, UPDATE, DELETE from CDC feed</span>
+APPLY CHANGES INTO silver.customers.dim_customer
+FROM STREAM(bronze.raw.customer_cdc)
+KEYS (customer_id)
+APPLY AS DELETE WHEN operation_type = 'DELETE'
+SEQUENCE BY change_timestamp  <span class="cm">-- handles out-of-order events</span>
+STORED AS SCD TYPE 1;         <span class="cm">-- or SCD TYPE 2</span></pre>
+        </div>
+        <ul class="points">
+          <li>Only works inside <strong>Lakeflow Spark Declarative Pipelines</strong> — cannot run standalone.</li>
+          <li><code>KEYS</code> = primary key column(s) to match on.</li>
+          <li><code>SEQUENCE BY</code> = column used to order events (handles late-arriving changes).</li>
+          <li><code>SCD TYPE 1</code> = overwrite. <code>SCD TYPE 2</code> = add new row, preserve history.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="gap-card" data-gap="Lakeflow Connect">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-medium">Medium</span>
+        <span class="gap-title">Lakeflow Connect — No-Code Connectors</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="bridge">Lakeflow Connect = ADF's Copy Activity / Linked Services for SaaS sources, but built natively into Databricks. Same concept: click-based connector configuration, no custom code.</div>
+        <ul class="points">
+          <li>Connects to: Salesforce, ServiceNow, Google Analytics, SharePoint, databases, and more.</li>
+          <li>Supports both <strong>batch and streaming</strong> ingestion.</li>
+          <li>Data lands directly into Unity Catalog tables — no staging required.</li>
+          <li>Configure via Databricks UI → Data Ingestion → Lakeflow Connect.</li>
+        </ul>
+        <div class="exam-tip">When the exam asks "which tool to ingest from Salesforce into Unity Catalog with no code" → Lakeflow Connect. When it asks about file-based ingestion from ADLS → COPY INTO or Auto Loader.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 5: DELTA LAKE ADVANCED
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Delta Lake — Advanced Patterns</h2>
+      <span class="section-weight" style="color:#34D399;border-color:#34D39930;background:rgba(52,211,153,0.06)">Prepare &amp; Process 30–35%</span>
+    </div>
+
+    <div class="gap-card" data-gap="OPTIMIZE VACUUM ZORDER Liquid Clustering">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-critical">Critical</span>
+        <span class="gap-title">OPTIMIZE, VACUUM, ZORDER &amp; Liquid Clustering</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">SQL</span></div>
+          <pre"><span class="cm">-- OPTIMIZE: compacts many small files into larger ones (improves read perf)</span>
+OPTIMIZE silver.sales.orders;
+
+<span class="cm">-- OPTIMIZE with ZORDER: co-locate related data by column</span>
+OPTIMIZE silver.sales.orders ZORDER BY (customer_id, order_date);
+
+<span class="cm">-- VACUUM: delete files no longer referenced by Delta log</span>
+VACUUM silver.sales.orders;                  <span class="cm">-- default 7 day retention</span>
+VACUUM silver.sales.orders RETAIN 168 HOURS; <span class="cm">-- explicit 7 days</span>
+
+<span class="cm">-- DESCRIBE HISTORY: audit all operations on a table</span>
+DESCRIBE HISTORY silver.sales.orders;
+
+<span class="cm">-- Time travel</span>
+SELECT * FROM silver.sales.orders VERSION AS OF 10;
+SELECT * FROM silver.sales.orders TIMESTAMP AS OF '2026-01-15';
+
+<span class="cm">-- Liquid clustering (modern alternative to ZORDER)</span>
+CREATE TABLE gold.sales.orders
+CLUSTER BY (customer_id, order_date);
+
+<span class="cm">-- Apply to existing table</span>
+ALTER TABLE gold.sales.orders CLUSTER BY (customer_id);</pre>
+        </div>
+        <table class="comp-table">
+          <tr><th>Command</th><th>What it does</th><th>When to run</th></tr>
+          <tr><td><code>OPTIMIZE</code></td><td>Merges small Parquet files into ~1GB files</td><td>Nightly on high-write tables</td></tr>
+          <tr><td><code>ZORDER BY</code></td><td>Co-locates rows with same key values in same files</td><td>With OPTIMIZE for filtered queries on specific columns</td></tr>
+          <tr><td><code>VACUUM</code></td><td>Physically deletes Parquet files older than retention period</td><td>Weekly; never below 7 days retention if time travel needed</td></tr>
+          <tr><td>Liquid clustering</td><td>Self-managing, incremental clustering. No full rewrites.</td><td>New tables with multiple query patterns. Replaces ZORDER.</td></tr>
+          <tr><td>Deletion vectors</td><td>Soft-deletes: marks rows as deleted without rewriting Parquet files</td><td>Enabled by default on Databricks 14+. Improves DELETE perf.</td></tr>
+        </table>
+        <div class="watchout">Never run VACUUM RETAIN 0 HOURS in production — it breaks time travel and can corrupt streaming queries that reference old files. Minimum safe retention = 7 days (168 hours).</div>
+        <div class="exam-tip">ZORDER = good for tables with 1-2 filter columns, static query patterns. Liquid clustering = better for tables queried on multiple different columns, or where query patterns change. Partitioning = only for very high cardinality date/region columns at massive scale.</div>
+      </div>
+    </div>
+
+    <div class="gap-card" data-gap="SCD Type 2 with Delta">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-high">High</span>
+        <span class="gap-title">SCD Type 2 in Delta — MERGE Pattern</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">SQL</span></div>
+          <pre"><span class="cm">-- SCD Type 2: expire old row, insert new row</span>
+MERGE INTO dim.dim_customer AS t
+USING (
+  SELECT *, current_timestamp() AS new_eff_start FROM staging.customers
+) AS s
+ON t.customer_id = s.customer_id AND t.is_current = true
+
+<span class="cm">-- Expire the current row if data changed</span>
+WHEN MATCHED AND (t.name != s.name OR t.email != s.email)
+  THEN UPDATE SET
+    t.is_current    = false,
+    t.eff_end_date  = current_timestamp()
+
+<span class="cm">-- Insert changed rows as new current records</span>
+WHEN NOT MATCHED THEN INSERT (
+  customer_id, name, email,
+  eff_start_date, eff_end_date, is_current
+) VALUES (
+  s.customer_id, s.name, s.email,
+  s.new_eff_start, NULL, true
+);</pre>
+        </div>
+        <div class="exam-tip">In DP-750, SCD Type 2 is implemented either via manual MERGE (as above) or via <code>APPLY CHANGES INTO ... STORED AS SCD TYPE 2</code> in a Lakeflow Pipeline. Know both patterns.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 6: LAKEFLOW PIPELINES
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Lakeflow Spark Declarative Pipelines</h2>
+      <span class="section-weight" style="color:#34D399;border-color:#34D39930;background:rgba(52,211,153,0.06)">Prepare &amp; Process 30–35%</span>
+    </div>
+
+    <div class="gap-card" data-gap="Lakeflow Pipelines DLT">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-critical">Critical</span>
+        <span class="gap-title">Lakeflow Declarative Pipelines — @dlt Decorators &amp; Expectations</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="bridge">Nothing in ADF/Synapse is equivalent. Lakeflow Pipelines is Databricks' declarative ETL framework (formerly Delta Live Tables). You define what you want, Databricks handles the execution order, dependencies, and data quality.</div>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">Python</span></div>
+          <pre"><span class="kw">import</span> dlt
+<span class="kw">from</span> pyspark.sql.functions <span class="kw">import</span> col, current_timestamp
+
+<span class="cm"># ── BRONZE: raw ingestion ──────────────────────────────</span>
+@dlt.table(
+    comment=<span class="st">"Raw events from landing zone"</span>,
+    table_properties={<span class="st">"quality"</span>: <span class="st">"bronze"</span>}
+)
+<span class="kw">def</span> bronze_events():
+    <span class="kw">return</span> (spark.readStream
+        .format(<span class="st">"cloudFiles"</span>)
+        .option(<span class="st">"cloudFiles.format"</span>, <span class="st">"json"</span>)
+        .load(<span class="st">"/Volumes/bronze/landing/events"</span>))
+
+<span class="cm"># ── SILVER: cleansed + quality checked ────────────────</span>
+@dlt.table(comment=<span class="st">"Cleansed events"</span>)
+@dlt.expect(<span class="st">"valid_event_id"</span>, <span class="st">"event_id IS NOT NULL"</span>)          <span class="cm"># WARN only</span>
+@dlt.expect_or_drop(<span class="st">"positive_amount"</span>, <span class="st">"amount > 0"</span>)          <span class="cm"># DROP bad row</span>
+@dlt.expect_or_fail(<span class="st">"valid_timestamp"</span>, <span class="st">"ts <= current_timestamp()"</span>) <span class="cm"># HALT pipeline</span>
+<span class="kw">def</span> silver_events():
+    <span class="kw">return</span> (dlt.read_stream(<span class="st">"bronze_events"</span>)
+        .filter(col(<span class="st">"event_type"</span>).isNotNull())
+        .withColumn(<span class="st">"ingested_at"</span>, current_timestamp()))
+
+<span class="cm"># ── GOLD: aggregated ──────────────────────────────────</span>
+@dlt.table
+<span class="kw">def</span> gold_daily_totals():
+    <span class="kw">return</span> (dlt.read(<span class="st">"silver_events"</span>)   <span class="cm"># static read, not stream</span>
+        .groupBy(<span class="st">"region"</span>)
+        .sum(<span class="st">"amount"</span>))</pre>
+        </div>
+        <div class="concept-label">The 3 Expectation Levels — memorise these</div>
+        <table class="comp-table">
+          <tr><th>Decorator</th><th>On failure</th><th>Use when</th></tr>
+          <tr><td><code>@dlt.expect</code></td><td>Log warning, keep the bad row</td><td>Monitoring only — don't want to lose data</td></tr>
+          <tr><td><code>@dlt.expect_or_drop</code></td><td>Drop the bad row, continue pipeline</td><td>Filter out invalid records silently</td></tr>
+          <tr><td><code>@dlt.expect_or_fail</code></td><td>Halt entire pipeline, raise error</td><td>Critical data quality — bad data must not proceed</td></tr>
+        </table>
+        <div class="concept-label">Key rules to know</div>
+        <ul class="points">
+          <li>Use <code>dlt.read_stream()</code> for streaming sources, <code>dlt.read()</code> for batch/static.</li>
+          <li>Lakeflow Pipelines manage their own compute — you specify a pipeline cluster, not a job cluster.</li>
+          <li><code>APPLY CHANGES INTO</code> is only available inside Lakeflow Pipelines.</li>
+          <li>Tables created by a pipeline are owned and managed by Unity Catalog.</li>
+        </ul>
+        <div class="exam-tip">The exam will give you a data quality scenario and ask which expectation type to use. Key: if the question says "alert but continue" → expect. "Discard invalid" → expect_or_drop. "Fail fast" → expect_or_fail.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 7: LAKEFLOW JOBS + CI/CD
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>Lakeflow Jobs, DABs &amp; CI/CD</h2>
+      <span class="section-weight" style="color:#FBB04C;border-color:#FBB04C30;background:rgba(251,176,76,0.06)">Deploy &amp; Maintain 30–35%</span>
+    </div>
+
+    <div class="gap-card" data-gap="Lakeflow Jobs">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-high">High</span>
+        <span class="gap-title">Lakeflow Jobs — Multi-Task Orchestration</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="bridge">Lakeflow Jobs = ADF Pipelines. Tasks = ADF Activities. depends_on = precedence constraints. You know this pattern — just learn the Databricks YAML/API format.</div>
+        <div class="concept-label">Key capabilities to know for the exam</div>
+        <ul class="points">
+          <li><strong>Task types</strong>: notebook, Python script, SQL query, Lakeflow Pipeline, dbt, Spark JAR.</li>
+          <li><strong>depends_on</strong>: defines task execution order (DAG). Multiple dependencies = all must succeed.</li>
+          <li><strong>Repair run</strong>: re-run only failed/skipped tasks — does NOT restart successful tasks. Cost-efficient.</li>
+          <li><strong>Job triggers</strong>: scheduled (cron), file arrival, continuous, manual.</li>
+          <li><strong>Alerts</strong>: configure on start, success, failure, duration exceeded (SLA breach).</li>
+          <li><strong>Automatic restart</strong>: configure max retries and retry interval on tasks or the whole job.</li>
+        </ul>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">CLI — troubleshooting commands</span></div>
+          <pre"><span class="cm"># List recent runs</span>
+databricks jobs run-now --job-id 12345
+
+<span class="cm"># Repair a failed run (re-run only failed tasks)</span>
+databricks runs repair --run-id 67890 --rerun-all-failed-tasks
+
+<span class="cm"># Cancel a running job</span>
+databricks runs cancel --run-id 67890
+
+<span class="cm"># Get run output/logs</span>
+databricks runs get-output --run-id 67890</pre>
+        </div>
+        <div class="exam-tip">Repair run vs restart: Repair = retry only failed tasks in an existing run (preserves successful task results). Restart = start a completely new run. Repair is always preferred for cost and speed.</div>
+      </div>
+    </div>
+
+    <div class="gap-card" data-gap="Databricks Asset Bundles">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-critical">Critical</span>
+        <span class="gap-title">Databricks Asset Bundles (DABs) — CI/CD for Databricks</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="bridge">ADF deploys via ARM templates in Azure DevOps. Databricks deploys via DABs — YAML-defined bundles deployed through CLI or REST API. Same CI/CD concept, different format.</div>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">YAML — databricks.yml</span></div>
+          <pre"><span class="kw">bundle</span>:
+  name: sales_etl_bundle
+
+<span class="kw">targets</span>:
+  dev:
+    mode: development
+    workspace:
+      host: https://adb-111.22.azuredatabricks.net
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-333.44.azuredatabricks.net
+
+<span class="kw">resources</span>:
+  jobs:
+    daily_etl:
+      name: Daily Sales ETL
+      job_clusters:
+        - job_cluster_key: main
+          new_cluster:
+            spark_version: <span class="st">"15.4.x-scala2.12"</span>
+            node_type_id: Standard_DS3_v2
+            num_workers: 4
+      tasks:
+        - task_key: ingest
+          job_cluster_key: main
+          notebook_task:
+            notebook_path: ./notebooks/01_ingest.py
+        - task_key: transform
+          depends_on: [{task_key: ingest}]
+          notebook_task:
+            notebook_path: ./notebooks/02_transform.py</pre>
+        </div>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">CLI — deployment commands to memorise</span></div>
+          <pre"><span class="cm"># Validate bundle config</span>
+databricks bundle validate
+
+<span class="cm"># Deploy to dev</span>
+databricks bundle deploy --target dev
+
+<span class="cm"># Deploy to prod</span>
+databricks bundle deploy --target prod
+
+<span class="cm"># Run a job from a deployed bundle</span>
+databricks bundle run --target prod daily_etl</pre>
+        </div>
+        <div class="exam-tip">Know both deployment methods: CLI (<code>databricks bundle deploy</code>) AND REST API. The exam will ask which command to use. Bundle configs support environment-specific overrides via <code>targets</code>.</div>
+        <div class="concept-label">Testing strategy to know</div>
+        <table class="comp-table">
+          <tr><th>Test Type</th><th>What it tests</th><th>In Databricks</th></tr>
+          <tr><td>Unit tests</td><td>Individual functions/transformations</td><td>pytest on individual notebook functions</td></tr>
+          <tr><td>Integration tests</td><td>Multiple components together</td><td>Run pipeline on test data in dev catalog</td></tr>
+          <tr><td>End-to-end tests</td><td>Full pipeline from source to output</td><td>Run full job in staging environment</td></tr>
+          <tr><td>UAT</td><td>Business validation of outputs</td><td>Stakeholders validate data in pre-prod catalog</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 8: SPARK PERFORMANCE
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>Spark Performance &amp; Troubleshooting</h2>
+      <span class="section-weight" style="color:#FBB04C;border-color:#FBB04C30;background:rgba(251,176,76,0.06)">Deploy &amp; Maintain 30–35%</span>
+    </div>
+
+    <div class="gap-card" data-gap="Spark UI Skew Shuffle Spill">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-critical">Critical</span>
+        <span class="gap-title">Spark UI — Diagnosing Skew, Shuffle &amp; Spill</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="bridge">Azure Monitor gives you job-level metrics. Spark UI gives you task-level internals. They complement each other — use Azure Monitor for alerting, Spark UI for root cause analysis.</div>
+        <table class="comp-table">
+          <tr><th>Issue</th><th>What it means</th><th>How to diagnose</th><th>How to fix</th></tr>
+          <tr><td><strong>Shuffle</strong></td><td>Data moved across network between executors (joins, groupBy, repartition)</td><td>Spark UI → Stages → high "Shuffle Read/Write" size</td><td>Broadcast small tables, reduce groupBy keys, use AQE</td></tr>
+          <tr><td><strong>Skew</strong></td><td>One partition much larger than others — one task runs 100x longer</td><td>Spark UI → Stages → Tasks: max task duration >> median</td><td><code>repartition(n, "key")</code>, salting technique, AQE skew join</td></tr>
+          <tr><td><strong>Spill</strong></td><td>Executor runs out of memory, writes to disk (very slow)</td><td>Spark UI → Stages → Spill column &gt; 0</td><td>Increase worker memory, reduce partition size, cache less</td></tr>
+        </table>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">Python — performance fixes</span></div>
+          <pre"><span class="cm"># Fix skew: check partition distribution</span>
+<span class="kw">from</span> pyspark.sql.functions <span class="kw">import</span> spark_partition_id
+df.groupBy(spark_partition_id()).count().show()
+
+<span class="cm"># Fix skew: repartition evenly</span>
+df_balanced = df.repartition(200, <span class="st">"customer_id"</span>)
+
+<span class="cm"># Fix shuffle: broadcast join (small table &lt; 200MB)</span>
+<span class="kw">from</span> pyspark.sql.functions <span class="kw">import</span> broadcast
+result = large_df.join(broadcast(lookup_df), <span class="st">"id"</span>)
+
+<span class="cm"># Enable Adaptive Query Execution (handles skew automatically)</span>
+spark.conf.set(<span class="st">"spark.sql.adaptive.enabled"</span>, <span class="st">"true"</span>)
+spark.conf.set(<span class="st">"spark.sql.adaptive.skewJoin.enabled"</span>, <span class="st">"true"</span>)
+
+<span class="cm"># Fix spill: cache only what's needed, unpersist when done</span>
+df_hot.cache()
+df_hot.count()  <span class="cm"># trigger materialisation</span>
+<span class="cm"># ... use df_hot ...</span>
+df_hot.unpersist()</pre>
+        </div>
+        <div class="concept-label">Where to look in Spark UI</div>
+        <ul class="points">
+          <li><strong>Jobs tab</strong> → see all Spark jobs and their status</li>
+          <li><strong>Stages tab</strong> → see shuffle sizes, spill amounts, task distribution</li>
+          <li><strong>DAG Visualization</strong> → see the execution plan as a graph (wide vs narrow transformations)</li>
+          <li><strong>SQL / Query Profile</strong> → for SQL queries, see physical plan, bottlenecks, row counts per operator</li>
+        </ul>
+        <div class="exam-tip">The exam will describe a symptom and ask for the diagnosis tool and fix. "One task taking much longer" = skew → Spark UI Stages tab → repartition or broadcast. "Tasks writing to disk" = spill → increase memory or reduce data per task.</div>
+      </div>
+    </div>
+
+    <div class="gap-card" data-gap="Azure Monitor for Databricks">
+      <div class="gap-header" onclick="toggleGap(this)">
+        <span class="priority-badge p-low">Low</span>
+        <span class="gap-title">Azure Monitor &amp; Log Analytics for Databricks</span>
+        <span class="gap-toggle">▾ expand</span>
+      </div>
+      <div class="gap-body">
+        <div class="bridge">This is almost pure DP-700. You know Azure Monitor and Log Analytics. The only new piece is pointing Databricks' diagnostic logs to your Log Analytics workspace.</div>
+        <div class="code-wrap">
+          <div class="code-top"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div><span class="code-lang">Azure CLI</span></div>
+          <pre"><span class="cm"># Enable diagnostic logging from Databricks to Log Analytics</span>
+az monitor diagnostic-settings create \
+  --name <span class="st">"databricks-to-law"</span> \
+  --resource <span class="st">"&lt;databricks-workspace-resource-id&gt;"</span> \
+  --workspace <span class="st">"&lt;log-analytics-workspace-id&gt;"</span> \
+  --logs <span class="st">'[
+    {"category":"clusters","enabled":true},
+    {"category":"jobs","enabled":true},
+    {"category":"notebook","enabled":true},
+    {"category":"dbfs","enabled":true}
+  ]'</span></pre>
+        </div>
+        <ul class="points">
+          <li>The 4 log categories to enable: <strong>clusters, jobs, notebook, dbfs</strong>.</li>
+          <li>Once in Log Analytics, query with KQL as normal — same as any Azure resource.</li>
+          <li>Azure Monitor alerts fire on Log Analytics query results (e.g., alert if job failure count &gt; 0).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       FINAL: QUICK REFERENCE
+  ══════════════════════════════════════════════ -->
+  <hr class="divider">
+  <div style="margin-bottom:16px">
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px">⚡ Exam Quick-Fire Reference — Commands &amp; Patterns to Memorise</div>
+    <table class="qr-table">
+      <tr><th>Command / Concept</th><th>What it does / When to use</th></tr>
+      <tr><td>cloudFiles format</td><td>Auto Loader. Always used with readStream. Needs schemaLocation + checkpointLocation.</td></tr>
+      <tr><td>COPY INTO</td><td>Idempotent batch file load. Tracks loaded files. SQL-based. Safe to re-run.</td></tr>
+      <tr><td>APPLY CHANGES INTO</td><td>CDC processing inside Lakeflow Pipeline only. Handles INSERT/UPDATE/DELETE. SCD1 or SCD2.</td></tr>
+      <tr><td>OPTIMIZE … ZORDER BY</td><td>Compact files + co-locate data. Run nightly on high-read tables with known filter columns.</td></tr>
+      <tr><td>VACUUM RETAIN 168 HOURS</td><td>Physically delete old files. 168h = 7 days. Never below 7 days in production.</td></tr>
+      <tr><td>CLUSTER BY (liquid)</td><td>Modern ZORDER replacement. Self-managing. Better for multiple or changing query patterns.</td></tr>
+      <tr><td>@dlt.expect_or_drop</td><td>Drop bad rows, continue. @dlt.expect = warn only. @dlt.expect_or_fail = halt pipeline.</td></tr>
+      <tr><td>SET ROW FILTER … ON (col)</td><td>Apply row-level security function to table. Function returns BOOLEAN.</td></tr>
+      <tr><td>ALTER COLUMN … SET MASK</td><td>Apply column mask function. Function transforms value based on user's group membership.</td></tr>
+      <tr><td>USE CATALOG + USE SCHEMA</td><td>Both required before SELECT works. Granting SELECT alone is NOT sufficient.</td></tr>
+      <tr><td>databricks bundle deploy</td><td>Deploy DAB to target environment. Use --target prod / --target dev.</td></tr>
+      <tr><td>runs repair --rerun-failed</td><td>Retry only failed tasks. Does NOT restart successful tasks. Cost efficient.</td></tr>
+      <tr><td>broadcast(small_df)</td><td>Broadcast join hint. Send small table to all executors. Eliminates shuffle.</td></tr>
+      <tr><td>dbutils.secrets.get()</td><td>Retrieve secret from Key Vault-backed scope. Never hardcode credentials.</td></tr>
+      <tr><td>Managed table</td><td>UC owns storage. DROP TABLE = deletes data. Default when no LOCATION specified.</td></tr>
+      <tr><td>External table</td><td>You own ADLS path. DROP TABLE = metadata only, data survives. Requires LOCATION.</td></tr>
+    </table>
+  </div>
+
+</div><!-- end main -->
+
+<script>
+// ── GAP TOGGLE ──────────────────────────────────────────────────
+function toggleGap(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.gap-toggle');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  toggle.textContent = isOpen ? '▾ expand' : '▴ collapse';
+}
+function expandAll() {
+  document.querySelectorAll('.gap-body').forEach(b => b.classList.add('open'));
+  document.querySelectorAll('.gap-toggle').forEach(t => t.textContent = '▴ collapse');
+}
+function collapseAll() {
+  document.querySelectorAll('.gap-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.gap-toggle').forEach(t => t.textContent = '▾ expand');
+}
+
+// ── TRACKER ──────────────────────────────────────────────────────
+const gaps = [];
+document.querySelectorAll('.gap-card[data-gap]').forEach(c => gaps.push(c.dataset.gap));
+
+let doneGaps = new Set();
+try { doneGaps = new Set(JSON.parse(localStorage.getItem('dp750_gaps')||'[]')); } catch(e){}
+
+function saveGaps() { try { localStorage.setItem('dp750_gaps', JSON.stringify([...doneGaps])); } catch(e){} }
+
+function buildTracker() {
+  const t = document.getElementById('tracker');
+  t.innerHTML = gaps.map((g,i) => {
+    const d = doneGaps.has(g);
+    return `<div class="track-item ${d?'done':''}" onclick="toggleTrackerItem(${i})" title="${g}">
+      <div class="track-box"><span class="track-check">✓</span></div>
+      <span class="track-label">${g}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('trackerCount').textContent = `${doneGaps.size} / ${gaps.length} gaps covered`;
+}
+
+function toggleTrackerItem(i) {
+  const g = gaps[i];
+  doneGaps.has(g) ? doneGaps.delete(g) : doneGaps.add(g);
+  saveGaps(); buildTracker();
+}
+
+buildTracker();
+
+// Open first card in each section by default
+document.querySelectorAll('.gap-card:first-of-type .gap-header').forEach(h => {
+  h.nextElementSibling.classList.add('open');
+  h.querySelector('.gap-toggle').textContent = '▴ collapse';
+});
+</script>
+</body>
+</html>
